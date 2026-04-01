@@ -1,0 +1,114 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{hyperref}
+
+\title{Filtering Normalizing Flows}
+\author{Otto Vintola}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\vspace{45pt}
+
+\section{Introduction}
+
+Dynamical systems are the leading methodology for modeling a number of real-world phenomenoms. For example, the flagship problem in modern robotics, simultaneous localization and mapping (SLAM), involves estimating the latent state, often position, and constructing a map of the environment. Often SLAM is approached with traditional methods such as the Kalman Filter \cite{Kalman} and its variants \cite{dorvash2023enhancedunscentedkalmanfilterbased,SLAMKalmanYin,SASAOKA2016303,YangKalman}.
+
+There exist other methods besides the Kalman filter, such as the particle filter \cite{gordon1993novel}. However, the problem with the aforementioned methods are that they either assume the noise in the system to be Gaussian, or they become degenerate and/or computationally expensive \cite{doucet2000sequential,arulampalam2002tutorial}. An easy way to overcome these issues is to abandon parametric assumptions of the filtering distribution. 
+
+The advances in deep generative modeling provides a promising direction to address these challenges. Particularly, normalizing flows (NF) provides a flexible method for constructing expressive probability distributions through sequenced invertible mappings \cite{rezende2015variational,dinh2017density,kingma2018glow}. NFs provide an efficient method for sampling and evaluating the likelihood which makes them especially suitable for modeling dynamical systems. 
+
+Filtering normalizing flows (FNFs) is an extension of the NF setting where the learned sequential invertible mappings approximate the filtering distribution commonly seen in Bayesian filtering and smoothing (BFS) \cite{sarkka2023bayesian}. Instead of assuming the filtering distribution to be Gaussian or representing it with particle weights, FNFs model it as a simple distribution that is transformed to a more complex one with an invertible mapping. 
+
+Moreover, FNFs extend to the smoothing perspective, where the goal is to estimate all of the latent states given all of the observations. By definition of NFs, the constructed mappings are invertible, thus they can be reversed to generalize to the entire trajectory. 
+
+
+\section{Methods}
+
+In this section, the methodology is presented. First, a review of the Bayesian filtering problem for state-space models is presented, where the goal is to recover the distribution of the latent state given a set of observations. Then normalizing flows are introduced to construct the same distribution through a sequence of invertible transformations. Finally, NFs are presented in the Bayesian filtering framework. 
+
+\subsection{Bayesian Filtering and Smoothing}
+
+In BFS, we consider a state-space model with latent states $\mathbf{x}_{0:T} = \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_T\}$ and noisy observations $\mathbf{y}_{1:T} = \{\mathbf{y}_1, \mathbf{y}_2, \ldots, \mathbf{y}_T\}$. The system is typically defined through the following probabilistic model:
+\begin{align}
+    \mathbf{x}_k &\sim p(\mathbf{x}_k \mid \mathbf{x}_{k-1}) \quad \text{(state transition model)}, \\
+    \mathbf{y}_k &\sim p(\mathbf{y}_k \mid \mathbf{x}_k) \quad \text{(observation model)}.
+\end{align}
+
+\noindent The goal of Bayesian \textit{filtering} is to recursively estimate the \textit{filtering distribution}, i.e., the posterior distribution of the current latent state given all observations up to time $k$:
+\begin{equation}
+    p(\mathbf{x}_k \mid \mathbf{y}_{1:k}), \quad k = 1, \ldots, T.
+\end{equation}
+
+\noindent The filtering distribution can be computed iteratively with the following two-step procedure: 
+
+\begin{enumerate}
+    \item \textbf{Prediction step:}
+    \begin{equation}
+        p(\mathbf{x}_k \mid \mathbf{y}_{1:k-1}) = \int p(\mathbf{x}_k \mid \mathbf{x}_{k-1}) \, p(\mathbf{x}_{k-1} \mid \mathbf{y}_{1:k-1}) \, d\mathbf{x}_{k-1},
+    \end{equation}
+    
+    \item \textbf{Update step:}
+    \begin{equation}
+        p(\mathbf{x}_k \mid \mathbf{y}_{1:k}) \propto p(\mathbf{y}_k \mid \mathbf{x}_k) \, p(\mathbf{x}_k \mid \mathbf{y}_{1:k-1}).
+    \end{equation}
+\end{enumerate}
+
+\noindent Another important goal is to compute the \textit{smoothing distribution} distribution of the entire trajcectory of latent states given all of the measurements:
+\begin{equation}
+    p(\mathbf{x}_{0:T} \big| \mathbf{y}_{1:T}), \text{ for } k = 1, \ldots , T.
+\end{equation}
+
+\noindent Often when computing these distributions for non-linear and non-Gaussian systems, the integration becomes computationally intractable, which motivates the approximate methods such as particle filters \cite{sarkka2023bayesian}.
+
+\subsection{Normalizing Flows}
+
+Normalizing flows (NFs) are a class of generative models that construct complex probability distributions through a sequence of invertible bijective transformations $f : \mathbb{R}^d \to \mathbb{R}^d$ \cite{razaghi2019filtering,kingma2018glow,rezende2015variational,dinh2017density}. Given some base distribution $p_Z(\mathbf{z})$, a normalizing flow defines a new distribution $p_X(\mathbf{x})$ like so \cite{murphy2023probabilistic}:
+\begin{equation}
+    \mathbf{x} = f(\mathbf{z}), \quad \mathbf{z} \sim p_Z(\mathbf{z}).
+\end{equation}
+\noindent The change of variables formula allows us to compute the density of $\mathbf{x}$ as follows \cite{razaghi2019filtering, kingma2018glow,rezende2015variational,dinh2017density}:
+\begin{equation}
+    p_X(\mathbf{x}) = p_Z(f^{-1}(\mathbf{x})) \left| \det \left( \frac{\partial f^{-1}(\mathbf{x})}{\partial \mathbf{x}} \right) \right|.
+\end{equation}
+
+Normalizing flows can approximate any smooth distribution with a positive density given a sufficiently \textit{powerful} transformation $f$ \cite{murphy2023probabilistic}. This can be seen by considering the scenario where $p_Z \sim \text{Uniform}(\cdot, \cdot)$, and the transformation $f$ is the inverse CDF of the target distribution. Then the resulting distribution $p_X$ is exactly the target distribution. This can be extended to the multivariate case by considering the Rosenblatt transformation \cite{rosenblatt1952remarks}
+\begin{equation}
+\begin{aligned}
+x_1 &= F^{-1}_{X_1}(z_1), \\
+x_2 &= F^{-1}_{X_2 \mid X_1}(z_2 \mid x_1), \\
+x_3 &= F^{-1}_{X_3 \mid X_1, X_2}(z_3 \mid x_1, x_2), \\
+&\;\;\vdots \\
+x_d &= F^{-1}_{X_d \mid X_{1:d-1}}(z_d \mid x_{1:d-1}).
+\end{aligned}
+\end{equation}
+\noindent where $F_i^{-1}$ is the inverse CDF of the $i$-th dimension of the target distribution conditioned on the previous dimensions.
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\bibliographystyle{ieeetr}
+\bibliography{bibi}
+\end{document}

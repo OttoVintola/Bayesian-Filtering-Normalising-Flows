@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2025)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: document.aux
+The style file: ieeetr.bst
+Database file #1: bibi.bib
+Warning--I didn't find a database entry for "rosenblatt1952remarks"
+Warning--empty publisher in YangKalman
+Warning--empty year in YangKalman
+You've used 14 entries,
+            1876 wiz_defined-function locations,
+            574 strings with 6250 characters,
+and the built_in function-call counts, 3601 in all, are:
+= -- 357
+> -- 137
+< -- 0
++ -- 51
+- -- 37
+* -- 245
+:= -- 507
+add.period$ -- 20
+call.type$ -- 14
+change.case$ -- 12
+chr.to.int$ -- 0
+cite$ -- 16
+duplicate$ -- 192
+empty$ -- 352
+format.name$ -- 37
+if$ -- 889
+int.to.chr$ -- 0
+int.to.str$ -- 14
+missing$ -- 16
+newline$ -- 51
+num.names$ -- 14
+pop$ -- 50
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 123
+stack$ -- 0
+substring$ -- 198
+swap$ -- 76
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 2
+while$ -- 31
+width$ -- 16
+write$ -- 143
+(There were 3 warnings)

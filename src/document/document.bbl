@@ -1,0 +1,51 @@
+\begin{thebibliography}{10}
+
+\bibitem{Kalman}
+R.~E. Kalman, ``A new approach to linear filtering and prediction problems,'' {\em Transactions of the ASME--Journal of Basic Engineering}, vol.~82, no.~Series D, pp.~35--45, 1960.
+
+\bibitem{dorvash2023enhancedunscentedkalmanfilterbased}
+M.~Dorvash, A.~Eslamian, and M.~R. Ahmadzadeh, ``Enhanced unscented kalman filter-based slam in dynamic environments: Euclidean approach,'' 2023.
+
+\bibitem{SLAMKalmanYin}
+I.~Ullah, X.~Su, X.~Zhang, and D.~Choi, ``Simultaneous localization and mapping based on kalman filter and extended kalman filter,'' {\em Wireless Communications and Mobile Computing}, vol.~2020, no.~1, p.~2138643, 2020.
+
+\bibitem{SASAOKA2016303}
+T.~Sasaoka, I.~Kimoto, Y.~Kishimoto, K.~Takaba, and H.~Nakashima, ``Multi-robot slam via information fusion extended kalman filters,'' {\em IFAC-PapersOnLine}, vol.~49, no.~22, pp.~303--308, 2016.
+\newblock 6th IFAC Workshop on Distributed Estimation and Control in Networked Systems NECSYS 2016.
+
+\bibitem{YangKalman}
+C.~Yang and L.~Xiang, {\em Distributed cooperative SLAM with adaptive Kalman filter and dynamic consensus}, pp.~183--191.
+
+\bibitem{gordon1993novel}
+N.~J. Gordon, D.~J. Salmond, and A.~F.~M. Smith, ``Novel approach to nonlinear/non-gaussian bayesian state estimation,'' {\em IEE Proceedings F: Radar and Signal Processing}, vol.~140, no.~2, pp.~107--113, 1993.
+
+\bibitem{doucet2000sequential}
+A.~Doucet, N.~de~Freitas, and N.~Gordon, ``Sequential monte carlo methods in practice,'' {\em Statistics and Computing}, 2000.
+
+\bibitem{arulampalam2002tutorial}
+M.~S. Arulampalam, S.~Maskell, N.~Gordon, and T.~Clapp, ``A tutorial on particle filters for online nonlinear/non-gaussian bayesian tracking,'' {\em IEEE Transactions on Signal Processing}, vol.~50, no.~2, pp.~174--188, 2002.
+
+\bibitem{rezende2015variational}
+D.~Rezende and S.~Mohamed, ``Variational inference with normalizing flows,'' in {\em Proceedings of the 32nd International Conference on Machine Learning}, vol.~37 of {\em Proceedings of Machine Learning Research}, pp.~1530--1538, PMLR, 2015.
+
+\bibitem{dinh2017density}
+L.~Dinh, J.~Sohl-Dickstein, and S.~Bengio, ``Density estimation using real nvp,'' {\em International Conference on Learning Representations (ICLR)}, 2017.
+\newblock arXiv:1605.08803.
+
+\bibitem{kingma2018glow}
+D.~P. Kingma and P.~Dhariwal, ``Glow: Generative flow with invertible 1x1 convolutions,'' {\em Advances in Neural Information Processing Systems (NeurIPS)}, 2018.
+\newblock arXiv:1807.03039.
+
+\bibitem{sarkka2023bayesian}
+S.~S{\"a}rkk{\"a} and L.~Svensson, {\em Bayesian Filtering and Smoothing}.
+\newblock Cambridge, UK: Cambridge University Press, second~ed., 2023.
+
+\bibitem{razaghi2019filtering}
+H.~S. Razaghi and L.~Paninski, ``Filtering normalizing flows,'' in {\em 4th Workshop on Bayesian Deep Learning (NeurIPS 2019)}, (Vancouver, Canada), 2019.
+\newblock Workshop paper.
+
+\bibitem{murphy2023probabilistic}
+K.~P. Murphy, {\em Probabilistic Machine Learning: Advanced Topics}.
+\newblock Adaptive Computation and Machine Learning, Cambridge, Massachusetts: The MIT Press, 2023.
+
+\end{thebibliography}
