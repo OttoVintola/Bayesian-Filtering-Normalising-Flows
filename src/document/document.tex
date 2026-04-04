@@ -85,8 +85,9 @@ Normalizing flows (NFs) are a class of generative models that construct complex 
     p_X(\mathbf{x}) = p_Z(f^{-1}(\mathbf{x})) \left| \det \left( \frac{\partial f^{-1}(\mathbf{x})}{\partial \mathbf{x}} \right) \right|.
 \end{equation}
 
-Normalizing flows can approximate any smooth distribution with a positive density given a sufficiently \textit{powerful} transformation $f$ \cite{murphy2023probabilistic}. This can be seen by considering the scenario where $p_Z \sim \text{Uniform}(\cdot, \cdot)$, and the transformation $f$ is the inverse CDF of the target distribution. Then the resulting distribution $p_X$ is exactly the target distribution. This can be extended to the multivariate case by considering the Rosenblatt transformation \cite{rosenblatt1952remarks}
+Normalizing flows can approximate any smooth distribution with a positive density given a sufficiently \textit{powerful} transformation $f$ \cite{murphy2023probabilistic}. This can be seen by considering the scenario where the base distribution is $p_Z \sim \text{Uniform}(0, 1)^d$, and the transformation $f$ is chosen to be the inverse Rosenblatt transformation \cite{rosenblatt1952remarks}. The target distribution $p_X$ is then exactly recovered by a sequence of conditional inverse CDFs as follows \cite{murphy2023probabilistic, Pap19}:
 \begin{equation}
+\label{eq:11}
 \begin{aligned}
 x_1 &= F^{-1}_{X_1}(z_1), \\
 x_2 &= F^{-1}_{X_2 \mid X_1}(z_2 \mid x_1), \\
@@ -97,13 +98,43 @@ x_d &= F^{-1}_{X_d \mid X_{1:d-1}}(z_d \mid x_{1:d-1}).
 \end{equation}
 \noindent where $F_i^{-1}$ is the inverse CDF of the $i$-th dimension of the target distribution conditioned on the previous dimensions.
 
+In practice, a single transformation $f$ is often not powerful enough to capture the complexity of the target distribution, thus a sequence of transformations is used \cite{rezende2015variational, kingma2018glow, dinh2017density}:
+\begin{equation}
+    \mathbf{x} = f_K \circ f_{K-1} \circ \cdots \circ f_1(\mathbf{z}).
+\end{equation}
+The log density of $\mathbf{x}$ can be computed as the forward process—from the base distribution to the target distribution—as follows:
+\begin{equation}
+    \log p_X(\mathbf{x}) = \log p_Z(\mathbf{z}) - \sum_{k=1}^K \log \left| \det \left(\frac{\partial f_k(\mathbf{h}_{k-1})}{\partial \mathbf{h}_{k-1}} \right) \right|,
+\end{equation}
+\noindent where $\mathbf{h}_{k-1} = f_{k-1} \circ \cdots \circ f_1(\mathbf{z})$ is the intermediate representation after the $k$-th transformation. The log density calculation follows from the fact that the Jacobian of a composition of functions is the product of the Jacobians of the individual functions \cite{murphy2023probabilistic}.
 
+\subsection{Filtering Normalizing Flows}
 
+While a normalizing flow could model any joint distribution $p(\mathbf{x}_{1:T})$, applying to the entire latent trajectory is computationally prohibitive and does not leverage the temporal dependencies in the system. A solution to this is presented in \cite{razaghi2019filtering}, where the authors propose to creatively constrain the expressiveness of the flow to match the recursive nature of Bayesian filtering. The flow is constrained to consist of a composition of functions $G = F_{T-1} \circ \cdots \circ F_1$, where each $F_t$ only transforms a consecutive pair of latent states. 
 
+For the smoothing case, this is achieved by utilizing a transformation $f$ parameterized by a weight matrix $\mathbf{A} \in \mathbb{R}^{dT \times dT}$ and bias $\mathbf{b} \in \mathbb{R}^{dT}$:
+\begin{equation}
+\mathbf{x}_{1:T} = f(\mathbf{z}_{1:T}; \mathbf{A}, \mathbf{b}) = \mathbf{z}_{1:T} + \mathbf{c} \odot h(\mathbf{A}^{-1}\mathbf{z}_{1:T} + \mathbf{b}),
+\end{equation}
+where $c$ is a context vector derived from observations, and $h(\cdot)$ is a smooth nonlinearity. To enforce temporal dependencies between consecutive states, the weight matrix $\mathbf{A}$ is constrained to be block-bi-diagonal:
+\begin{equation}
+\mathbf{A} =
+\begin{bmatrix}
+\mathbf{D}_1 &  &  &  \\
+\mathbf{L}_1 & \mathbf{D}_2 &  &  \\
+ & \ddots & \ddots & \\
+ &  & \mathbf{L}_{T-1} & \mathbf{D}_T
+\end{bmatrix}
+.
+\end{equation}
 
+Because $\mathbf{A}$ is lower-triangular, its determinant is simply the product of the determinants of the diagonal blocks $\mathbf{D}_t$, which allows the log density to be computed by:
+\begin{equation}
+\log q(\mathbf{x}_{1:T}) = \sum_{t=1}^T \log p(\mathbf{z}_t) + \sum_{t=1}^T \sum_{i=1}^d \log (1 + c_t(i) D_{t}(i, i) \psi_{t}(i)) - \sum_{t=1}^T \sum_{i=1}^d \log D_{t}(i, i),
+\end{equation}
+where $\mathbf{\psi} = h'(\mathbf{A}^{-1}\mathbf{z}_{1:T} + \mathbf{b})$ is the derivative of the nonlinearity. The log density calculation follows from Equation \ref{eq:11} and the determinant identity $\det(I + A^{-1}) = \det(A + I) / \det(A)$ \cite{razaghi2019filtering}.
 
-
-
+\section{Simulation}
 
 
 
